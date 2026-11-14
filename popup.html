@@ -1,72 +1,154 @@
 <!DOCTYPE html>
-<html id="uBO-popup-panel" class="desktop">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disrupt The Ads</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0b1220;
+        --panel: #111b2d;
+        --panel-2: #18253d;
+        --text: #edf5ff;
+        --muted: #aac0df;
+        --accent: #58d2b8;
+        --accent-2: #3db7ff;
+        --danger: #ff6b6b;
+      }
 
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark" />
-<link rel="stylesheet" href="css/default.css">
-<link rel="stylesheet" href="css/common.css">
-<link rel="stylesheet" href="css/fa-icons.css">
-<link rel="stylesheet" href="css/filtering-mode.css">
-<link rel="stylesheet" href="css/popup.css">
-<link rel="stylesheet" href="css/shield-theme.css">
-<title data-i18n="extName"></title>
-</head>
+      * { box-sizing: border-box; }
 
-<body class="loading busy">
+      body {
+        margin: 0;
+        width: 320px;
+        min-height: 260px;
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
 
-<main>
-    <div id="hostname"><span></span>&shy;<span></span></div>
-    <div id="hero" class="needData" aria-live="polite">
-        <div id="blockedCount">0</div>
-        <div id="blockedLabel">blocked on this page</div>
+      .panel {
+        padding: 16px 18px;
+        background: var(--panel);
+        border: 1px solid #23314d;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 12px 0;
+      }
+
+      .label {
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .sub {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      button[role="switch"] {
+        position: relative;
+        width: 42px;
+        height: 22px;
+        border: 0;
+        border-radius: 999px;
+        background: #3b4d6e;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      button[role="switch"]::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 4px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        transition: transform 0.2s ease;
+      }
+
+      button[role="switch"][aria-checked="true"] {
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      }
+
+      button[role="switch"][aria-checked="true"]::after {
+        transform: translateX(18px);
+      }
+
+      .stats {
+        margin-top: 18px;
+        padding: 12px 10px;
+        border-radius: 10px;
+        background: var(--panel-2);
+        text-align: center;
+      }
+
+      #count {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      #countLabel {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      #reload {
+        width: 100%;
+        margin-top: 16px;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 8px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        color: #031019;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <h1>Disrupt The Ads</h1>
+
+      <div class="row">
+        <span class="label">Block all sites</span>
+        <button id="globalSwitch" role="switch" aria-checked="true" aria-label="Toggle global blocking"></button>
+      </div>
+      <div id="globalSub" class="sub">On for all sites</div>
+
+      <div id="siteRow" class="row">
+        <span class="label">Pause on this site</span>
+        <button id="siteSwitch" role="switch" aria-checked="false" aria-label="Toggle site blocking"></button>
+      </div>
+      <div id="siteSub" class="sub">Blocking is active</div>
+
+      <div class="stats">
+        <span id="count">0</span>
+        <span id="countLabel">requests blocked on this page</span>
+      </div>
+
+      <button id="reload">Reload tab</button>
     </div>
-    <!-- -------- -->
-    <div class="filteringModeSlider needData">
-        <div class="filteringModeButton"><div></div></div>
-        <span data-level="0" aria-label="filteringMode0Name"></span>
-        <span data-level="1" aria-label="filteringMode1Name"></span>
-        <span data-level="2" aria-label="filteringMode2Name"></span>
-        <span data-level="3" aria-label="filteringMode3Name"></span>
-    </div>
-    <!-- -------- -->
-    <div id="filteringModeText" class="needData"><label data-i18n="popupFilteringModeLabel">_</label><br><span>_</span><span></span></div>
-    <!-- -------- -->
-    <div class="toolMenu localTools needHTTP">
-        <label data-i18n="popupLocalToolsLabel"></label>
-        <span id="gotoZapper" class="tool enabled" tabindex="0">
-            <span class="fa-icon">bolt</span>
-            <span data-i18n="zapperTipEnter">_</span>
-        </span>
-        <span id="gotoPicker" class="tool enabled" tabindex="0">
-            <span class="fa-icon">eye-slash</span>
-            <span data-i18n="pickerTipEnter">_</span>
-        </span>
-        <span id="gotoUnpicker" class="tool" tabindex="0">
-            <span class="fa-icon">eye-open</span>
-            <span data-i18n="unpickerTipEnter">_</span>
-        </span>
-        <span id="gotoReport" class="tool enabled" tabindex="0">
-            <span class="fa-icon">comment-alt</span>
-            <span data-i18n="popupTipReport">_</span>
-        </span>
-    </div>
-    <!-- -------- -->
-    <div class="toolRibbon globalTools">
-        <span id="gotoMatchedRules" class="fa-icon tool" tabindex="0" title="Show matched rules">list-alt<span class="caption">Show matched rules</span></span>
-        <span id="gotoDashboard" class="fa-icon tool enabled" tabindex="0" data-i18n-title="popupTipDashboard">cogs<span class="caption" data-i18n="popupTipDashboard"></span></span>
-    </div>
-</main>
-<aside>
-    <span class="fa-icon">spinner</span>
-</aside>
 
-<script src="js/theme.js" type="module"></script>
-<script src="js/fa-icons.js" type="module"></script>
-<script src="js/i18n.js" type="module"></script>
-<script src="js/popup.js" type="module"></script>
-
-</body>
-
+    <script src="popup.js"></script>
+  </body>
 </html>
